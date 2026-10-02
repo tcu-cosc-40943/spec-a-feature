@@ -886,6 +886,96 @@ The course admin shall be able to cancel the use case at any time prior to submi
 
 **Assumptions:**
 **Open Issues:**
+### **UC-SEC-remind-non-submitters: The instructor reminds students with missing submissions**
+
+**UC ID and Name:** UC-SEC-remind-non-submitters: Remind students with missing submissions  
+**Created By:** Janav Gowda  
+**Date Created:** 02/Oct/26  
+**Primary Actor:** instructor  
+**Secondary Actors:** student  
+
+**Trigger:** The instructor indicates to view students with missing submissions in a course section and send them a reminder.
+
+**Description:** The instructor wants to identify students in an assigned course section who have not submitted required weekly activity reports or peer evaluations and send reminders only to students who still have a submission they can complete.
+
+**Preconditions:**
+- PRE-1. The instructor is logged into the system.
+- PRE-2. The instructor is assigned to the course section being viewed (BR-section-scoped-access).
+
+**Postconditions:**
+- POST-1. A reminder email is sent to each selected eligible student whose required submission is still missing.
+- POST-2. The instructor is informed which reminders were sent, skipped, or could not be delivered.
+
+**Main Success Scenario:**
+1. The instructor indicates to view students with missing submissions for a course section.
+2. The system identifies students in that course section who currently have one or more missing submissions according to the "Missing submission" definition in the Associated Information.
+3. The system displays each student with the missing artifact type and the week to which the missing submission applies.
+4. The instructor selects one or more students to remind.
+5. The system verifies that each selected student still has the identified missing submission and is eligible to receive a reminder.
+6. The system sends a reminder email to each selected student identifying the missing submission or submissions and the relevant week.
+7. The system informs the instructor which reminders were sent successfully.
+8. Use case ends.
+
+**Extensions:**
+- **2a. The student is not assigned to a team:**
+  - 2a1. The system does not classify the student as a non-submitter for a weekly activity report or peer evaluation because the student is not permitted to author either artifact until assigned to a team (BR-team-assignment-required).
+  - 2a2. The system excludes the student from the reminder list for those artifacts.
+
+- **2b. The peer-evaluation week is not one of the course section's active weeks:**
+  - 2b1. The system does not classify the student as missing a peer evaluation for that week (BR-active-weeks).
+  - 2b2. The system does not offer a peer-evaluation reminder for that week.
+
+- **2c. The peer-evaluation submission window has closed:**
+  - 2c1. The system displays the peer evaluation as missed but does not classify it as reminder-eligible because the evaluation can no longer be submitted (BR-evaluation-submission-window).
+  - 2c2. The system indicates to the instructor that the submission window has closed.
+    
+- **2d. The student's account is deactivated:**
+  - 2d1. The system does not classify the student's missing artifacts as reminder-eligible because the student cannot currently access the system to submit them (BR-student-lifecycle).
+  - 2d2. The system excludes the student from the reminder-send list.
+
+- **2e. The student previously submitted an artifact but the submission no longer exists:**
+  - 2e1. The system treats the artifact as missing if no current stored submission exists for that student, artifact type, and relevant week.
+  - 2e2. If the student is otherwise eligible to submit the artifact, the student appears in the reminder list.
+
+- **2f. No students currently have reminder-eligible missing submissions:**
+  - 2f1. The system informs the instructor that there are no students who currently need a reminder.
+  - 2f2. Use case ends.
+
+- **5a. A selected student submitted the artifact after the list was displayed:**
+  - 5a1. The system skips the reminder for that artifact rather than sending an outdated reminder.
+  - 5a2. The system informs the instructor that the reminder was skipped because the submission is no longer missing.
+  - 5a3. The system continues processing the remaining selected students.
+
+- **5b. The instructor already sent a reminder to the same student for the same missing artifact within the restricted reminder period:**
+  - 5b1. The system does not send another reminder to that student for that artifact (BR-reminder-rate-limit).
+  - 5b2. The system informs the instructor that the reminder was skipped because another reminder was sent within the restricted period.
+  - 5b3. The system continues processing the remaining selected students.
+
+- **6a. The mail server rejects one or more student email addresses:**
+  - 6a1. The system continues sending reminders to the remaining selected students rather than abandoning the reminder batch.
+  - 6a2. The system records that the affected reminder could not be delivered and reports the failure to the instructor.
+  - 6a3. The use case continues until all selected students have been processed.
+
+**Priority:** High
+
+**Frequency of Use:** Approximately 1–2 instructors, several usages per week during weeks in which submissions are due.
+
+**Business Rules:** BR-section-scoped-access, BR-role-based-access,BR-student-lifecycle, BR-team-assignment-required, BR-active-weeks, BR-evaluation-submission-window, BR-reminder-rate-limit
+
+**Associated Information:**
+- **Missing submission:** Missing status is evaluated separately for each artifact type. A weekly activity report is considered submitted for a student and week when at least one activity for that student's WAR is currently stored for that week; if no activities remain, the WAR is missing. A peer evaluation is considered submitted when a current peer-evaluation record exists for that student and evaluated week. If the applicable record no longer exists, the artifact is missing again.
+- A submitted weekly activity report does not satisfy a missing peer evaluation, and a submitted peer evaluation does not satisfy a missing weekly activity report.
+- A student appears in the reminder list only for a missing artifact that the student is currently permitted to submit.
+- Weekly activity reports are not excluded merely because the week is outside the course section's active-weeks window; peer evaluations follow BR-active-weeks.
+- The reminder display identifies, at minimum, the student's name, the missing artifact type, and the relevant week.
+- The reminder email identifies the artifact or artifacts that remain missing and their relevant week.
+- Failure to deliver one reminder does not roll back reminders that were successfully sent to other students.
+
+**Related Use Cases:** UC-WAR-manage-activities: Manage activities in a weekly activity report; UC-EVA-submit-evaluation: Submit a peer evaluation for the previous week.
+
+**Assumptions:**
+
+**Open Issues:**
 
 ## **Team**
 
