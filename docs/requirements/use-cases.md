@@ -1834,6 +1834,83 @@ Supervised teams shall be organized by section names.
 **Assumptions:**
 **Open Issues:**
 
+### **UC-INS-nudge-non-submitters: The instructor views which students have not submitted and sends them a reminder**
+
+**UC ID and Name:** UC-INS-nudge-non-submitters: View which students have not submitted and send them a reminder
+**Created By:**
+**Date Created:**
+**Primary Actor:** instructor
+**Secondary Actors:** student
+**Trigger:** The instructor selects a course section and requests the weekly submission status or asks the system to send reminder emails to the students who have not submitted the required artifact for the current due window.
+**Description:** The instructor wants to know which students in a course section have not submitted the weekly activity report or peer evaluation due this cycle, and to send reminder emails only to those students whose missing submission remains incomplete.
+
+**Preconditions:**
+- PRE-1. The instructor is logged into the system.
+- PRE-2. The instructor is assigned to the selected course section (BR-section-scoped-access).
+- PRE-3. The selected section includes at least one open reminder cycle for which the system can evaluate student submissions.
+
+**Postconditions:**
+- POST-1. The system displays the students in the section who are missing the required submission for the selected due item.
+- POST-2. Reminders are sent only to the students in that list whose current email addresses are accepted by the mail server and who have not already received a reminder for that due item in the current cycle.
+
+**Main Success Scenario:**
+1. The instructor selects a course section and indicates to review the weekly submission status.
+2. The system determines the due item or items for the current reminder cycle and checks each student in the section against the rule for "has not submitted" defined in the Associated Information of this use case.
+3. The system displays the list of students who have not submitted, grouped by the due item they still need to complete.
+4. The instructor reviews the list and confirms that she wants to send reminder emails to the displayed students.
+5. The system sends a reminder email only to those students who remain eligible for the reminder and whose email addresses the mail system accepts.
+6. The system records which students received the reminder and which were skipped because they were no longer eligible, already reminded in this cycle, or rejected by the mail server.
+7. The instructor sees a summary of the result and the use case ends.
+
+**Extensions:**
+- **2a. One or more students are not assigned to a team:**
+  - 2a1. The system excludes those students from the non-submitter list and records that they are not eligible to submit until they are assigned to a team (BR-team-assignment-required).
+  - 2a2. Use case continues at step 3.
+- **2b. The due item is outside the section's active weeks or the submission window has closed:**
+  - 2b1. The system does not include that due item in the reminder list and informs the instructor that no reminder is sent for an inactive or closed submission window (BR-active-weeks, BR-evaluation-submission-window).
+  - 2b2. Use case continues with any still-valid due items in the selected reminder cycle, or ends if none remain.
+- **2c. A student previously submitted the due item and later deleted it:**
+  - 2c1. The system treats the deleted record as no valid submission and includes the student in the reminder list until a valid record exists for the due item or the window closes (BR-non-submitter-status).
+  - 2c2. Use case continues at step 3.
+- **4a. The instructor requests a reminder for a student who already received one in the current cycle:**
+  - 4a1. The system suppresses the duplicate reminder and tells the instructor that this student already received a reminder for that due item in the current cycle (BR-reminder-frequency-limit).
+  - 4a2. Use case continues with the remaining students.
+- **5a. The mail server rejects the address for one or more students:**
+  - 5a1. The system logs the failure, skips those students for this reminder batch, and continues sending to the rest of the eligible list.
+  - 5a2. The system reports the undeliverable addresses to the instructor.
+  - 5a3. Use case ends.
+- **5b. No students remain eligible for a reminder:**
+  - 5b1. The system displays an empty list and informs the instructor that no reminder is needed for the selected due item.
+  - 5b2. Use case ends.
+
+**Priority:** High
+**Frequency of Use:** 1 instructor, 1-2 usages per week during active sections.
+**Business Rules:** BR-section-scoped-access, BR-role-based-access, BR-team-assignment-required, BR-active-weeks, BR-evaluation-submission-window, BR-non-submitter-status, BR-reminder-frequency-limit
+
+**Associated Information:**
+
+Definition of "has not submitted":
+- A student is counted as a non-submitter for a reminder only if she is enrolled in the section, is assigned to a team, and the due item for the current reminder cycle has no valid submission record in the system.
+- A draft that has never been submitted, a submission that was deleted, and a failed/rejected submission do not count as a valid submission. That student remains on the non-submitter list until a valid record exists or the due window closes.
+- A student who is not assigned to a team, or whose due item falls outside the relevant active weeks or closed submission window, is excluded from the list for that reminder cycle.
+- This rule is about the student's status for the reminder, not about whether she may read her own work or the section's records; those access rules remain governed by BR-team-scoped-access and BR-section-scoped-access.
+
+Reminder list fields:
+
+| Property name | Data type | Validation rule | Security/access concerns | Reference to glossary |
+| ---- | ---- | ---- | ---- | ---- |
+| Student name | String | Required | Instructor sees only students in the assigned section; students never see one another's reminder status |  |
+| Team | String | Required when assigned | Instructor sees only teams in the assigned section |  |
+| Due item | Enumeration | Required | The reminder item is the weekly activity report or the peer evaluation for the relevant week |  |
+| Submitted? | Boolean | Required | Derived from the system's submission record, not from a manual instructor override |  |
+| Reminder sent? | Boolean | Required | Visible to the instructor only |  |
+
+The instructor may cancel the use case at any time before confirming the reminder batch.
+
+**Related Use Cases:** UC-WAR-manage-activities: Manage activities in a Weekly Activity Report; UC-EVA-submit-evaluation: Submit a peer evaluation for the previous week
+**Assumptions:** The reminder list is produced for the course section the instructor is assigned to and is based on the current due window, not a future or historical week.
+**Open Issues:**
+
 ## **Account**
 
 ### **UC-ACC-setup-student-account: The student sets up a student account**
