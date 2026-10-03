@@ -47,6 +47,11 @@ These business rules apply across Project Pulse. The course-administration rules
 - **BR-evaluation-private-comment:** When submitting a peer evaluation, the evaluator may optionally include a private comment about the teammate being evaluated. A private comment is visible only to the instructor assigned to the course section (and course admin, per BR-role-based-access); it is never shown to the evaluatee or any other student on the team. Private comments exist to give students a safe channel to raise concerns early.
 - **BR-evaluation-visibility:** For a peer evaluation, a student may see only her own rubric criterion scores, public comments (not private comments — see BR-evaluation-private-comment), and overall grade.
 
+#Targeted Reminders
+
+- **BR-targeted-reminder-eligibility:** A targeted reminder may be sent only to a student who has no valid submission for the selected assignment and week and is still permitted to submit it under the applicable business rules. The system must revalidate eligibility immediately before sending. Deleting a submission makes the student outstanding again but does not override submission restrictions or reminder limits.
+- **BR-targeted-reminder-limit:** A student may receive no more than one successfully sent instructor-initiated targeted reminder per assignment type, course section, and week, regardless of which instructor sends it. Submission, deletion, or resubmission does not reset this limit. Failed sending attempts and automated reminders do not count toward the limit.
+
 # **Access and Ownership**
 
 - **BR-team-scoped-access:** A team is the ownership boundary for all student work. A student may access team-owned work only within a team she belongs to; she may not access another team's requirements graph, documents, project source material, weekly activity reports, or peer evaluations. Team membership is a necessary condition, not a sufficient one: what a student may do with a given kind of work inside her own team is governed by the rule for that kind of work (peer evaluations are narrowed to her own results by BR-evaluation-visibility and BR-evaluation-private-comment, while requirement content and her team's weekly activity reports are hers to reach throughout the team). (This is the default "Security/access concerns" rule cited by the authoring use cases.)

@@ -4919,3 +4919,72 @@ File names include document type and team identifier.
 **Related Use Cases:** UC-AI-critique: Request a critique from the critique assistant; UC-AI-consult-project-assistant: Consult the project assistant; UC-CFG-configure-review-criteria: Configure the cross-document review criteria for a course section; UC-VAL-run-validation: Run validation (ReqLint) on the current document; UC-AI-review-proposal: Review and accept or reject an assistant proposal; UC-DOC-edit-document: Edit a section-based requirement document; UC-DOC-edit-use-case: Edit a use case.
 **Assumptions:**
 **Open Issues:**
+
+### **UC-NOT-send-targeted-reminders: The instructor sends assignment reminders to students with outstanding submissions** 
+**UC ID and Name:** UC-NOT-send-targeted-reminders: Send targeted reminders
+**Created By:** Amarachi Chiemela
+**Date Created:** October 1, 2026
+**Primary Actor:** Instructor
+**Secondary Actors:** Email Service
+**Trigger:**  The instructor selects the option to send targeted reminders to students with outstanding submissions.
+**Description:** The instructor sends targeted email reminders to students who have not submitted their weekly activity reports or peer evaluations for a selected week. The system identifies eligible students based on the selected assignment's submission status and deadline, allowing the instructor to send reminders only to students with outstanding work.
+
+**Preconditions:**
+- PRE-1. The instructor is logged into the system.
+- PRE-2. The instructor is authorized to access the selected course section.
+- PRE-3. The selected week is an active week for the course section.
+- PRE-4. The submission window for the selected assignment is open.
+
+**Postconditions:**
+- POST-1. Targeted reminders have been sent to the selected students.
+- POST-2. The system has recorded each successfully sent reminder to enforce the weekly reminder limit.
+- POST-3. The instructor is informed of the outcome, including any reminders that were unsuccessful.
+
+**Main Success Scenario:**
+1. The instructor navigates to the Section's Activities page for an authorized course section and selects a week.
+2. The system displays students with outstanding weekly activities reports for the selected week.
+3. The instructor selects one or more students and chooses the "Send Targeted Reminder" action.
+4. The system verifies each selected student's current submission status and reminder eligibility in accordance with BR-targeted-reminder-eligibility and BR-targeted-reminder-limit.
+5. The system displays the eligible students and asks the instructor to confirm the reminders.
+6. The instructor confirms the action.
+7. The system sends an email reminder to each selected student.
+8. The system records each successfully sent reminder.
+9. The system displays the outcome of the operation to the instructor.
+10. Use case ends.
+
+**Extensions:**
+- **1a. Instructor sends peer evaluation reminders**
+  - 1a1. The instructor navigates to the Section's Evaluations page and selects a week.
+  - 1a2. The system displays students with outstanding peer evaluations for the selected week.
+  - 1a3. The instructor selects one or more students and chooses Send Targeted Reminder.
+  - 1a4. The use case resumes at step4, applying the peer evaluation submission rules.
+- **2a. There are no students with outstanding submissions**
+  - 2a1. The system informs the instructor that there are no outstanding submissions for the selected and week.
+- **4a. The selected student(s) has already received a targeted reminder**
+  - 4a1. The system identifies students who have reached the limit established by BR-targeted-reminder-limit.
+  - 4a2. The system excludes those students from the eligible recipients but retains them on the outstanding submissions list.
+  - 4a3. If eligible recipients remain, the use case continues at step 5. Otherwise, the system informs the instructor that no selected students are eligible, and the case ends.
+- **4b. The selected student submitted an assignment after the list was displayed**
+  - 4b1. The system evaluates the student's current submission status rather than relying on the list.
+  - 4b2. If a valid submission exists, the system excludes the student.
+  - 4b3. If eligible students remain, use case continues at step 5, else instructor is notified and  use case ends.
+- **6a. The instructor cancels the reminder**
+  - 6a1. The system sends no reminders and records no successful sends. Use case ends.
+- **7a. Email service rejects a reminder**
+  - 7a1. The system records the failed attempt without counting it toward the BR-targeted-reminder-limit.
+  - 7a2. The system continues processing the remaining reminders.
+  - 7a3. The system reports the failure to the instructor at step 9.
+
+**Priority:** High
+**Frequency of Use:** Weekly, as needed; Instructors may send targeted reminders for outstanding weekly activity reports and peer evaluations during their applicable submission periods.
+**Business Rules:** BR-targeted-reminder-eligibility, BR-targeted-reminder-limit 
+**Associated Information:**
+- Existing outstanding-submissions lists on the Section's Activities and Section's Evaluations pages.
+- It draws on the project's current requirements coverage, the imported project source material, and the teaching context configured for the course section (UC-CFG-configure-teaching-context).
+- Educational intent: it lowers the cost of finding the right next step without doing the student's thinking for her; productivity is deliberately subordinate to learning.
+- All calls to the LLM Service are routed through the server-side AI proxy.
+- Honors FR-AI-no-auto-edit, FR-AI-enablement, FR-AI-degradation.
+
+**Related Use Cases:** UC-WAR-team-war-report: The instructor/student generates a WAR report of a team. UC-EVA-section-evaluation-report: The instructor generates a peer evaluation report of the entire course section
+**Assumptions:**
+**Open Issues:**
